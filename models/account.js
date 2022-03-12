@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const { Schema, model } = mongoose;
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 const accountSchema = new Schema({
   name: { type: String, required: true },
   email: {
     type: String,
-    unique: [true, 'Email address already exists'],
+    unique: [true, "Email address already exists"],
     lowerCase: true,
     required: true,
   },
@@ -15,14 +15,16 @@ const accountSchema = new Schema({
   isVerified: { type: Boolean, default: false },
   picture: String,
   authenticatedBy: String,
-  organisation: { type: Schema.Types.ObjectId, ref: 'Organisation' },
+  storeName: String,
+  address: String,
+  phone: String,
 });
 
-accountSchema.pre('save', async function (next) {
+accountSchema.pre("save", async function (next) {
   if (this.password) {
     this.password = await bcrypt.hash(this.password, 12);
   }
   next();
 });
 
-export default model('Account', accountSchema);
+export default model("Account", accountSchema);

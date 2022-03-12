@@ -12,7 +12,6 @@ export const CreateAccount = async (req, res) => {
     const accessToken = createAccessToken({ id: account._id });
 
     sendAccessToken(account, req, res, accessToken);
-    res.json({ message: "Account Saved" });
   } catch (error) {
     console.error({ error });
     if (error) res.status(400).json({ message: "Something bad happened" });
