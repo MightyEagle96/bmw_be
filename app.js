@@ -5,11 +5,11 @@ import cors from "cors";
 import morgan from "morgan";
 import { ConnectDatabase } from "./database.js";
 import authRouter from "./routers/auth/authRouter.js";
-import { orginURL } from "./utils/data.js";
+import { originURL } from "./utils/data.js";
 
 ConnectDatabase();
 
-dotenv.config();
+dotenv.config({ path: "/.env" });
 
 const app = express();
 
@@ -21,7 +21,8 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(cors({ origin: orginURL, credentials: true }));
+console.log({ originURL });
+app.use(cors({ origin: originURL, credentials: true }));
 app.use(express.json());
 app.use(express.json({ limit: "50mb" }));
 
