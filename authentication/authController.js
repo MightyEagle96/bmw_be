@@ -4,6 +4,8 @@ import { createAccessToken, sendAccessToken } from "./token.js";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import { googleAuth, isAuth } from "./isAuth.js";
+import { mailOptions, redirectUrl, sendEmail } from "../email.js";
+import { tokenUUID } from "../trial.js";
 
 export const CreateAccount = async (req, res) => {
   try {
@@ -12,6 +14,15 @@ export const CreateAccount = async (req, res) => {
     const accessToken = createAccessToken({ id: account._id });
 
     sendAccessToken(account, req, res, accessToken);
+
+    const token = `${tokenUUID}-${account._id}`;
+    const mailHeaders = mailOptions(
+      req.body.name.split(" ")[0],
+      req.body.email,
+      redirectUrl(token)
+    );
+
+    sendEmail(mailHeaders);
   } catch (error) {
     console.error({ error });
     if (error) res.status(400).json({ message: "Something bad happened" });

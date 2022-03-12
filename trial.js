@@ -1,24 +1,13 @@
-// import fs from "fs";
-// // const data = [
-// //   { name: "Moses", age: 23 },
-// //   { name: "David", age: 24 },
-// // ];
+import crypto from "crypto";
 
-// let friends = [];
+const token = crypto.randomUUID();
 
-// const path = "./file.txt";
+const formatted = [];
+for (let i = 0; i < token.length; i++) {
+  if (token[i] !== "-") {
+    formatted.push(token[i]);
+  }
+}
 
-// // fs.writeFile(path, JSON.stringify(data), (err) => {
-// //   if (err) {
-// //     console.log(err);
-// //   }
-// // });
-
-// fs.readFile(path, (err, data) => {
-//   if (err) {
-//     console.log(err);
-//   }
-//   friends = JSON.parse(data);
-//   //console.log(JSON.parse(data));
-//   console.log(friends);
-// });
+export const tokenUUID = formatted.join("");
+// console.log(formatted.join(""));
