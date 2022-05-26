@@ -3,7 +3,8 @@ import multer from "multer";
 import {
   CreateProduct,
   UploadProductPhoto,
-} from "../controllers/ProductController";
+  ViewProducts,
+} from "../controllers/ProductController.js";
 const upload = multer({ dest: "public/images" });
 
 const productRouter = express.Router();
@@ -14,4 +15,7 @@ productRouter
     "/uploadProductPhoto/:id",
     upload.single("productPhoto"),
     UploadProductPhoto
-  );
+  )
+  .get("/viewProducts", ViewProducts);
+
+export default productRouter;

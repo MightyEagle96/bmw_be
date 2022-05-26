@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import productModel from "../models/productModel";
+import productModel from "../models/productModel.js";
 
 import { google } from "googleapis";
 import fs from "fs";
@@ -15,6 +15,11 @@ const auth = new google.auth.GoogleAuth({
 export const CreateProduct = async (req, res) => {
   await productModel.create(req.body);
   res.json({ title: "Succcess", message: "Product Created successfully" });
+};
+
+export const ViewProducts = async (req, res) => {
+  const products = await productModel.find(req.query);
+  res.json({ products });
 };
 
 export const UploadProductPhoto = async (req, res) => {

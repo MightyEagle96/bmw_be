@@ -5,6 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { ConnectDatabase } from "./database.js";
 import authRouter from "./routers/auth/authRouter.js";
+import productRouter from "./routers/productRouter.js";
 import { originURL } from "./utils/data.js";
 
 ConnectDatabase();
@@ -29,8 +30,14 @@ app.get("/", (req, res) => {
   res.json({ message: "Server is alive" });
 });
 app.use(authRouter);
+app.use(productRouter);
 app.use("*", (req, res) => {
-  res.json({ message: "Cannot find this route on this server" });
+  res
+    .status(404)
+    .json({
+      title: "Invalid Route",
+      message: "Cannot find this route on this server",
+    });
 });
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
