@@ -7,6 +7,7 @@ const productSchema = new Schema({
   amount: Number,
   quantity: Number,
   imageUrl: String,
+  account: { type: Schema.Types.ObjectId, ref: "Account" },
 });
 
 export default model("Product", productSchema);

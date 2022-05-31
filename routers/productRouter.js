@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import { IsLoggedIn } from "../authentication/AuthController.js";
 import {
   CreateProduct,
   UploadProductPhoto,
@@ -10,7 +11,7 @@ const upload = multer({ dest: "public/images" });
 const productRouter = express.Router();
 
 productRouter
-  .post("/createProduct", CreateProduct)
+  .post("/createProduct", IsLoggedIn, CreateProduct)
   .post(
     "/uploadProductPhoto/:id",
     upload.single("productPhoto"),

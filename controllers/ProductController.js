@@ -13,6 +13,7 @@ const auth = new google.auth.GoogleAuth({
 });
 
 export const CreateProduct = async (req, res) => {
+  req.body.account = req.account._id;
   await productModel.create(req.body);
   res.json({ title: "Succcess", message: "Product Created successfully" });
 };

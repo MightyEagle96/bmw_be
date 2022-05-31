@@ -4,8 +4,7 @@ import { createAccessToken, sendAccessToken } from "./token.js";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import { googleAuth, isAuth } from "./isAuth.js";
-import { mailOptions, redirectUrl, sendEmail } from "../email.js";
-import { tokenUUID } from "../trial.js";
+import { ErrorHandler } from "../controllers/ErrorController.js";
 
 export const CreateAccount = async (req, res) => {
   try {
@@ -14,18 +13,8 @@ export const CreateAccount = async (req, res) => {
     const accessToken = createAccessToken({ id: account._id });
 
     sendAccessToken(account, req, res, accessToken);
-
-    const token = `${tokenUUID}-${account._id}`;
-    const mailHeaders = mailOptions(
-      req.body.name.split(" ")[0],
-      req.body.email,
-      redirectUrl(token)
-    );
-
-    sendEmail(mailHeaders);
   } catch (error) {
-    console.error({ error });
-    if (error) res.status(400).json({ message: "Something bad happened" });
+    ErrorHandler(error, res);
   }
 };
 
@@ -34,17 +23,24 @@ export const Login = async (req, res) => {
     //check if the email exists
     const account = await Account.findOne({ email: req.body.email });
 
-    if (!account) res.status(401).json({ message: "Email address not found" });
+    if (!account)
+      return res.status(401).json({
+        message: "Email address not found",
+        title: "Error logging in",
+      });
 
     //check if the password is correct
     if (!(await bcrypt.compare(req.body.password, account.password)))
-      return res.status(401).json({ message: "Passwords do not match" });
+      return res
+        .status(401)
+        .json({ message: "Passwords do not match", title: "Error logging in" });
+    else {
+      const accessToken = createAccessToken({ id: account._id });
 
-    const accessToken = createAccessToken({ id: account._id });
-
-    sendAccessToken(account, req, res, accessToken);
+      sendAccessToken(account, req, res, accessToken);
+    }
   } catch (error) {
-    console.log(error);
+    ErrorHandler(error, res);
   }
 };
 
@@ -87,13 +83,42 @@ export const IsLoggedIn = async (req, res, next) => {
         const account = await Account.findById(userId);
         req.account = account;
       }
+      next();
     } else if (req.headers.authenticatedby === "google") {
       const email = await googleAuth(req, res);
       const account = await Account.findOne({ email });
       req.account = account;
+      next();
+    } else if (req.headers.authorization) {
+      const userId = isAuth(req, res);
+      if (userId) {
+        const account = await Account.findById(userId);
+        req.account = account;
+      }
+      next();
+    } else {
+      return res.status(401).json({ message: "You are not logged in" });
     }
   } catch (error) {
-    return res.status(401).json({ message: "invalid token" });
+    return res.status(401).json({ message: "session expired" });
   }
-  next();
+};
+
+export const RestrictTo = (...roles) => {
+  return (req, res, next) => {
+    try {
+      if (!roles.includes(req.account.role)) {
+        return res.status(403).json({
+          title: "Invalid Permission",
+          message: "You do not have permission to perform this action",
+        });
+      }
+      next();
+    } catch (error) {
+      //ErrorHandler(error, res);
+      res
+        .status(401)
+        .json({ title: "Unauthorized", message: "You are not logged in" });
+    }
+  };
 };

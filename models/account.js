@@ -10,6 +10,7 @@ const accountSchema = new Schema({
     lowerCase: true,
     required: true,
   },
+  phoneNumber: { type: String },
   password: { type: String },
   role: String,
   isVerified: { type: Boolean, default: false },
