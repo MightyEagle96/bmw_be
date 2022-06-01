@@ -32,12 +32,10 @@ app.get("/", (req, res) => {
 app.use(authRouter);
 app.use(productRouter);
 app.use("*", (req, res) => {
-  res
-    .status(404)
-    .json({
-      title: "Invalid Route",
-      message: "Cannot find this route on this server",
-    });
+  res.status(404).json({
+    title: "Invalid Route",
+    message: "Cannot find this route on this server",
+  });
 });
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
