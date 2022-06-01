@@ -23,6 +23,14 @@ export const ViewProducts = async (req, res) => {
   res.json({ products });
 };
 
+export const ViewProduct = async (req, res) => {
+  const product = await productModel
+    .findById(req.params.id)
+    .populate("Account");
+
+  res.json({ product });
+};
+
 export const UploadProductPhoto = async (req, res) => {
   const product = await productModel.findById(req.params.id);
   const newFileName = `${product._id}_${Date.now()}.${

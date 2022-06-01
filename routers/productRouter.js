@@ -4,6 +4,7 @@ import { IsLoggedIn } from "../authentication/AuthController.js";
 import {
   CreateProduct,
   UploadProductPhoto,
+  ViewProduct,
   ViewProducts,
 } from "../controllers/ProductController.js";
 const upload = multer({ dest: "public/images" });
@@ -17,6 +18,7 @@ productRouter
     upload.single("productPhoto"),
     UploadProductPhoto
   )
-  .get("/viewProducts", ViewProducts);
+  .get("/viewProducts", ViewProducts)
+  .get("/viewProduct", ViewProduct);
 
 export default productRouter;
