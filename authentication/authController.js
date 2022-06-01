@@ -27,13 +27,16 @@ export const Login = async (req, res) => {
       return res.status(401).json({
         message: "Email address not found",
         title: "Error logging in",
+        errorType: "login",
       });
 
     //check if the password is correct
     if (!(await bcrypt.compare(req.body.password, account.password)))
-      return res
-        .status(401)
-        .json({ message: "Passwords do not match", title: "Error logging in" });
+      return res.status(401).json({
+        message: "Passwords do not match",
+        title: "Error logging in",
+        errorType: "login",
+      });
     else {
       const accessToken = createAccessToken({ id: account._id });
 
