@@ -17,18 +17,17 @@ const app = express();
 const PORT = process.env.PORT || 2207;
 
 app.use(express.static("public"));
+app.use(cors({ origin: originURL, credentials: true }));
+app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.get("/", (req, res) => {
+  res.json({ message: "Server is alive" });
+});
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(cors({ origin: originURL, credentials: true }));
-app.use(express.json());
-app.use(express.json({ limit: "50mb" }));
-
-app.get("/", (req, res) => {
-  res.json({ message: "Server is alive" });
-});
 app.use(router);
 app.use("*", (req, res) => {
   res.status(404).json({
