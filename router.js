@@ -17,6 +17,6 @@ router
   .post("/login", Login)
   .post("/createProduct", IsLoggedIn, CreateProduct)
   .get("/viewProducts", ViewProducts)
-  .get("/viewProduct", ViewProduct);
+  .get("/viewProduct/:id", ViewProduct);
 
 export default router;

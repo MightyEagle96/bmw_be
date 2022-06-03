@@ -24,9 +24,7 @@ export const ViewProducts = async (req, res) => {
 };
 
 export const ViewProduct = async (req, res) => {
-  const product = await productModel
-    .findById(req.params.id)
-    .populate("Account");
+  const product = await productModel.findById(req.params.id);
 
   res.json({ product });
 };
