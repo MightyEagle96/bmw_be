@@ -5,16 +5,55 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import { googleAuth, isAuth } from "./isAuth.js";
 import { ErrorHandler } from "../controllers/ErrorController.js";
+import request from "request";
+import otpGenerator from "otp-generator";
 
 export const CreateAccount = async (req, res) => {
+  req.body.phoneNumber = `234${req.body.phoneNumber.slice(
+    1,
+    req.body.phoneNumber.length
+  )}`;
+
+  const otp = otpGenerator.generate(6, {
+    digits: true,
+    specialChars: false,
+    lowerCaseAlphabets: false,
+    upperCaseAlphabets: false,
+  });
   try {
+    //create account
     const account = await Account.create(req.body);
 
-    const accessToken = createAccessToken({ id: account._id });
+    //send sms
+    const data = {
+      to: req.body.phoneNumber,
+      from: "BMW-NAIJA",
+      sms: `BMW-NAIJA authentication code: ${otp}`,
+      type: "plain",
+      api_key: process.env.termii,
+      channel: "generic",
+    };
+    const options = {
+      method: "POST",
+      url: "https://api.ng.termii.com/api/sms/send",
+      headers: {
+        "Content-Type": ["application/json", "application/json"],
+      },
+      body: JSON.stringify(data),
+    };
 
-    sendAccessToken(account, req, res, accessToken);
+    //send the response
+    res.status(201).send("done");
+
+    //send message
+    request(options, async function (error, response) {
+      if (error) throw new Error(error);
+      console.log(response.body);
+
+      await Account.findByIdAndUpdate(account._id, { otp });
+    });
   } catch (error) {
-    ErrorHandler(error, res);
+    ErrorHandler(error, res, "auth");
   }
 };
 
@@ -35,6 +74,15 @@ export const Login = async (req, res) => {
       return res.status(401).json({
         message: "Passwords do not match",
         title: "Error logging in",
+        errorType: "login",
+      });
+
+    //if account is not verified send a message
+
+    if (!account.isVerified)
+      return res.status(401).json({
+        message: "This account has not been verified yet",
+        title: "Unverified account",
         errorType: "login",
       });
     else {
@@ -124,4 +172,22 @@ export const RestrictTo = (...roles) => {
         .json({ title: "Unauthorized", message: "You are not logged in" });
     }
   };
+};
+
+export const VerifyAccount = async (req, res) => {
+  const account = await Account.findOne({ otp: req.body.otp });
+  if (account) {
+    await Account.findByIdAndUpdate(account._id, {
+      otp: undefined,
+      isVerified: true,
+    });
+
+    const accessToken = createAccessToken({ id: account._id });
+
+    sendAccessToken(account, req, res, accessToken);
+  } else
+    res.status(400).json({
+      title: "OTP Invalid",
+      message: "The OTP you entered is either incorrect or has expired",
+    });
 };

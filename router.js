@@ -3,6 +3,7 @@ import {
   CreateAccount,
   IsLoggedIn,
   Login,
+  VerifyAccount,
 } from "./authentication/authController.js";
 import {
   CreateProduct,
@@ -15,6 +16,7 @@ const router = express.Router();
 router
   .post("/createAccount", CreateAccount)
   .post("/login", Login)
+  .post('/verifyAccount', VerifyAccount)
   .post("/createProduct", IsLoggedIn, CreateProduct)
   .get("/viewProducts", ViewProducts)
   .get("/viewProduct/:id", ViewProduct);

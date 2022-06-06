@@ -10,7 +10,12 @@ const accountSchema = new Schema({
     lowerCase: true,
     required: true,
   },
-  phoneNumber: { type: String },
+  phoneNumber: {
+    type: String,
+    unique: [true, "Phone number already exists"],
+    lowerCase: true,
+    required: true,
+  },
   password: { type: String },
   role: String,
   isVerified: { type: Boolean, default: false },
@@ -19,6 +24,7 @@ const accountSchema = new Schema({
   storeName: String,
   address: String,
   phone: String,
+  otp: String,
 });
 
 accountSchema.pre("save", async function (next) {
