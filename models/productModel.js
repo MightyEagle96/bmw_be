@@ -6,7 +6,7 @@ const productSchema = new Schema({
   description: String,
   amount: Number,
   quantity: Number,
-  imageUrl: String,
+  imageUrls: [{ type: String }],
   account: { type: Schema.Types.ObjectId, ref: "Account" },
 });
 
