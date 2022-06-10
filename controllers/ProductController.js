@@ -1,10 +1,11 @@
 /* eslint-disable no-undef */
 import productModel from "../models/productModel.js";
+import { ErrorHandler } from "../controllers/ErrorController.js";
 
 import { google } from "googleapis";
 import fs from "fs";
 
-const KEYFILEPATH = "public/credential.json";
+const KEYFILEPATH = "public/sterlingserviceaccount.json";
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 const auth = new google.auth.GoogleAuth({
@@ -47,22 +48,44 @@ export const UploadProductPhoto = async (req, res) => {
   );
 };
 
-async function CreateAndUploadFile(
-  auth,
-  newFileName,
-  filePath,
-  req,
-  product,
-  res
-) {
+export const UploadProductImages = async (req, res) => {
+  console.log(req.files);
+  // try {
+  //   for (let i = 0; i < req.files.length; i++) {
+  //     const newFileName = `${req.params.id}img${i}.${
+  //       req.files[i].mimetype.split("/")[1]
+  //     }`;
+
+  //     const filePath = `public/images/${newFileName}`;
+
+  //     fs.rename(
+  //       `public/images/${req.files[i].filename}`,
+  //       filePath,
+  //       async () => {}
+  //     );
+
+  //     CreateAndUploadFile(auth, newFileName, req.files[i], filePath);
+  //   }
+
+  //   res.status(201).send("Product images uploaded successfully");
+  //   DeletePhotos();
+  // } catch (error) {
+  //   console.log(error);
+  //   ErrorHandler(error, res);
+  // }
+
+  res.json({ title: "success", message: "image uploaded successfully" });
+};
+async function CreateAndUploadFile(auth, newFileName, file, filePath) {
   const driveService = google.drive({ version: "v3", auth });
 
   let fileMetaData = {
     name: newFileName,
-    parents: [process.env.GOOGLE_DRIVE_PARENT],
+    parents: ["1UFsyKj7RtN8qkJICYEgK9n35Av2D_gLF"],
   };
+
   let media = {
-    mimeType: req.file.mimeType,
+    mimetype: file.mimetype,
     body: fs.createReadStream(filePath),
   };
 
@@ -74,13 +97,30 @@ async function CreateAndUploadFile(
 
   switch (response.status) {
     case 200:
-      await productModel.findByIdAndUpdate(product._id, {
-        imageUrl: `https://drive.google.com/uc?id=${response.data.id}`,
+      console.log("success");
+      await product.findByIdAndUpdate(req.params.id, {
+        $push: {
+          images: `https://drive.google.com/uc?id=${response.data.id}`,
+        },
       });
-      res.json({ title: "Success", message: "Profile Photo Upated" });
+
       break;
 
     default:
       break;
   }
+}
+function DeletePhotos() {
+  const folder = "public/images";
+  fs.readdir(folder, (err, files) => {
+    if (err) console.log(err);
+
+    files.forEach((file) => {
+      fs.unlink(`${folder}/${file}`, (err) => {
+        if (err) {
+          throw err;
+        }
+      });
+    });
+  });
 }
