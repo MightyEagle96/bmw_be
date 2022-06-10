@@ -49,34 +49,33 @@ export const UploadProductPhoto = async (req, res) => {
 };
 
 export const UploadProductImages = async (req, res) => {
-  console.log(req.files);
-  // try {
-  //   for (let i = 0; i < req.files.length; i++) {
-  //     const newFileName = `${req.params.id}img${i}.${
-  //       req.files[i].mimetype.split("/")[1]
-  //     }`;
+  try {
+    for (let i = 0; i < req.files.length; i++) {
+      const newFileName = `${req.params.id}img${i}.${
+        req.files[i].mimetype.split("/")[1]
+      }`;
 
-  //     const filePath = `public/images/${newFileName}`;
+      const filePath = `public/images/${newFileName}`;
 
-  //     fs.rename(
-  //       `public/images/${req.files[i].filename}`,
-  //       filePath,
-  //       async () => {}
-  //     );
+      fs.rename(
+        `public/images/${req.files[i].filename}`,
+        filePath,
+        async () => {}
+      );
 
-  //     CreateAndUploadFile(auth, newFileName, req.files[i], filePath);
-  //   }
+      CreateAndUploadFile(auth, newFileName, req.files[i], filePath, req);
+    }
 
-  //   res.status(201).send("Product images uploaded successfully");
-  //   DeletePhotos();
-  // } catch (error) {
-  //   console.log(error);
-  //   ErrorHandler(error, res);
-  // }
+    res.status(201).send("Product images uploaded successfully");
+    // DeletePhotos();
+  } catch (error) {
+    console.log(error);
+    ErrorHandler(error, res);
+  }
 
-  res.json({ title: "success", message: "image uploaded successfully" });
+  //res.json({ title: "success", message: "image uploaded successfully" });
 };
-async function CreateAndUploadFile(auth, newFileName, file, filePath) {
+async function CreateAndUploadFile(auth, newFileName, file, filePath, req) {
   const driveService = google.drive({ version: "v3", auth });
 
   let fileMetaData = {
