@@ -6,11 +6,13 @@ import {
   Login,
   VerifyAccount,
 } from "./authentication/authController.js";
+import { RecordPayment } from "./controllers/PaymentController.js";
 import {
   CreateProduct,
   ViewProduct,
   ViewProducts,
   UploadProductImages,
+  UploadProgress,
 } from "./controllers/ProductController.js";
 
 const router = express.Router();
@@ -22,9 +24,12 @@ router
   .post("/createProduct", IsLoggedIn, CreateProduct)
   .get("/viewProducts", ViewProducts)
   .get("/viewProduct/:id", ViewProduct)
+  .get("/uploadProgress", UploadProgress)
+
+  .post("/recordPayment", RecordPayment)
   .patch(
     "/uploadProductImages/:id",
-    upload.array("images", 4),
+    upload.array("images", 10),
     UploadProductImages
   );
 

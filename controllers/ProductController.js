@@ -13,6 +13,9 @@ const auth = new google.auth.GoogleAuth({
   scopes: SCOPES,
 });
 
+let filesToUpload = 0;
+let currentValue = filesToUpload;
+
 export const CreateProduct = async (req, res) => {
   req.body.account = req.account._id;
   await productModel.create(req.body);
@@ -49,6 +52,7 @@ export const UploadProductPhoto = async (req, res) => {
 };
 
 export const UploadProductImages = async (req, res) => {
+  filesToUpload = req.files.length;
   try {
     for (let i = 0; i < req.files.length; i++) {
       const newFileName = `${req.params.id}img${i}.${
@@ -67,46 +71,53 @@ export const UploadProductImages = async (req, res) => {
     }
 
     res.status(201).send("Product images uploaded successfully");
-    // DeletePhotos();
+    DeletePhotos();
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     ErrorHandler(error, res);
   }
 
   //res.json({ title: "success", message: "image uploaded successfully" });
 };
 async function CreateAndUploadFile(auth, newFileName, file, filePath, req) {
-  const driveService = google.drive({ version: "v3", auth });
+  try {
+    const driveService = google.drive({ version: "v3", auth });
 
-  let fileMetaData = {
-    name: newFileName,
-    parents: ["1UFsyKj7RtN8qkJICYEgK9n35Av2D_gLF"],
-  };
+    let fileMetaData = {
+      name: newFileName,
+      parents: ["1UFsyKj7RtN8qkJICYEgK9n35Av2D_gLF"],
+    };
 
-  let media = {
-    mimetype: file.mimetype,
-    body: fs.createReadStream(filePath),
-  };
+    let media = {
+      mimetype: file.mimetype,
+      body: fs.createReadStream(filePath),
+    };
 
-  let response = await driveService.files.create({
-    requestBody: fileMetaData,
-    media,
-    fields: "id",
-  });
+    let response = await driveService.files.create({
+      requestBody: fileMetaData,
+      media,
+      fields: "id",
+    });
 
-  switch (response.status) {
-    case 200:
-      console.log("success");
-      await product.findByIdAndUpdate(req.params.id, {
-        $push: {
-          images: `https://drive.google.com/uc?id=${response.data.id}`,
-        },
-      });
+    switch (response.status) {
+      case 200:
+        console.log("success");
+        currentValue -= 1;
+        await productModel.findByIdAndUpdate(req.params.id, {
+          $push: {
+            imageUrls: `https://drive.google.com/uc?id=${response.data.id}`,
+          },
+        });
 
-      break;
+        break;
 
-    default:
-      break;
+      default:
+        break;
+    }
+  } catch (error) {
+    // res
+    //   .status(500)
+    //   .json({ tile: "Error", message: "Can't upload photos at this time" });
   }
 }
 function DeletePhotos() {
@@ -123,3 +134,15 @@ function DeletePhotos() {
     });
   });
 }
+
+export const UploadProgress = async (req, res) => {
+  try {
+    res.json({
+      progress: Math.floor(
+        ((filesToUpload - currentValue) / filesToUpload) * 100
+      ),
+    });
+  } catch (error) {
+    ErrorHandler(error, res);
+  }
+};
