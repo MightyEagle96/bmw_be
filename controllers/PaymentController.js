@@ -25,3 +25,8 @@ export const RecordPayment = async (req, res) => {
     ErrorHandler(error, res);
   }
 };
+
+export const ViewOrders = async (req, res) => {
+  const orders = await paymentModel.find({ account: req.params.id });
+  res.json({ orders });
+};

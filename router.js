@@ -6,7 +6,7 @@ import {
   Login,
   VerifyAccount,
 } from "./authentication/authController.js";
-import { RecordPayment } from "./controllers/PaymentController.js";
+import { RecordPayment, ViewOrders } from "./controllers/PaymentController.js";
 import {
   CreateProduct,
   ViewProduct,
@@ -31,6 +31,8 @@ router
     "/uploadProductImages/:id",
     upload.array("images", 10),
     UploadProductImages
-  );
+  )
+
+  .get("/viewOrders/:id", ViewOrders);
 
 export default router;

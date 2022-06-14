@@ -11,6 +11,8 @@ const paymentSchema = new Schema({
   tx_ref: Number,
   quantity: Number,
   product: { type: Schema.Types.ObjectId, ref: "Product" },
+  account: { type: Schema.Types.ObjectId, ref: "Account" },
+  productStatus: { type: String, default: "pending" },
 });
 
 export default model("Payment", paymentSchema);
