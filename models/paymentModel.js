@@ -4,7 +4,12 @@ const { Schema, model } = mongoose;
 const paymentSchema = new Schema({
   amount: Number,
   currency: String,
-  customer: { name: String, email: String, phone_number: String },
+  customer: {
+    name: String,
+    email: String,
+    phone_number: String,
+    address: String,
+  },
   flw_ref: String,
   status: String,
   transaction_id: Number,

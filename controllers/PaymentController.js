@@ -27,6 +27,8 @@ export const RecordPayment = async (req, res) => {
 };
 
 export const ViewOrders = async (req, res) => {
-  const orders = await paymentModel.find({ account: req.params.id });
+  const orders = await paymentModel
+    .find({ account: req.params.id })
+    .populate("product");
   res.json({ orders });
 };
