@@ -6,7 +6,11 @@ import {
   Login,
   VerifyAccount,
 } from "./authentication/authController.js";
-import { RecordPayment, ViewOrders } from "./controllers/PaymentController.js";
+import {
+  PutInTransit,
+  RecordPayment,
+  ViewOrders,
+} from "./controllers/PaymentController.js";
 import {
   CreateProduct,
   ViewProduct,
@@ -33,6 +37,7 @@ router
     UploadProductImages
   )
 
-  .get("/viewOrders/:id", ViewOrders);
+  .get("/viewOrders/:id", ViewOrders)
+  .patch("/putInTransit/:id", PutInTransit);
 
 export default router;

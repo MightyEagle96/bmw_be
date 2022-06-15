@@ -1,3 +1,4 @@
+import { productStatus } from "../labels.js";
 import paymentModel from "../models/paymentModel.js";
 import { ErrorHandler } from "./ErrorController.js";
 
@@ -31,4 +32,13 @@ export const ViewOrders = async (req, res) => {
     .find({ account: req.params.id, ...req.query })
     .populate("product");
   res.json({ orders });
+};
+
+export const PutInTransit = async (req, res) => {
+  await paymentModel.findByIdAndUpdate(req.params.id, {
+    productStatus: productStatus.shipped,
+    dateShipped: Date.now(),
+  });
+
+  res.json({ title: "Success", message: "Product is now in transit" });
 };
