@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import {
   CreateAccount,
+  FacebookAccount,
   IsLoggedIn,
   Login,
   VerifyAccount,
@@ -23,6 +24,7 @@ const router = express.Router();
 const upload = multer({ dest: "public/images" });
 router
   .post("/createAccount", CreateAccount)
+  .post("/facebookAccount", FacebookAccount)
   .post("/login", Login)
   .post("/verifyAccount", VerifyAccount)
   .post("/createProduct", IsLoggedIn, CreateProduct)

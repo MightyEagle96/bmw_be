@@ -7,6 +7,7 @@ import { googleAuth, isAuth } from "./isAuth.js";
 import { ErrorHandler } from "../controllers/ErrorController.js";
 import request from "request";
 import otpGenerator from "otp-generator";
+import { FacebookSchema } from "../models/customer.js";
 
 export const CreateAccount = async (req, res) => {
   req.body.phoneNumber = `234${req.body.phoneNumber.slice(
@@ -124,6 +125,25 @@ export const GoogleAccount = async (req, res) => {
     user,
     accessToken,
   });
+};
+
+export const FacebookAccount = async (req, res) => {
+  try {
+    const user = await FacebookSchema.findOne({ email: req.body.email });
+
+    if (!user) {
+      await FacebookSchema.create(req.body);
+      res.status(201).send("Facebook user stored");
+    } else {
+      await FacebookSchema.findByIdAndUpdate(user._id, {
+        accessToken: req.body.accessToken,
+      });
+      res.status(201).send("Facebook user updated");
+    }
+    //if user email exists, just update the token
+  } catch (error) {
+    ErrorHandler(error, res);
+  }
 };
 
 export const IsLoggedIn = async (req, res, next) => {

@@ -37,4 +37,6 @@ const googleAuth = async (req, res) => {
 
   return email;
 };
+
+const facebookAuth = async (req, res) => {};
 export { isAuth, googleAuth };
