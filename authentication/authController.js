@@ -138,7 +138,7 @@ export const FacebookAccount = async (req, res) => {
       await FacebookSchema.findByIdAndUpdate(user._id, {
         accessToken: req.body.accessToken,
       });
-      res.status(201).send("Facebook user updated");
+      res.status(200).send("Facebook user updated");
     }
     //if user email exists, just update the token
   } catch (error) {

@@ -23,7 +23,7 @@ export const CreateProduct = async (req, res) => {
 };
 
 export const ViewProducts = async (req, res) => {
-  const products = await productModel.find(req.query);
+  const products = await productModel.find(req.query).limit(req.query.limit);
   res.json({ products });
 };
 
