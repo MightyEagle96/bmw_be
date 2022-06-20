@@ -3,3 +3,5 @@ export const productStatus = {
   shipped: "shipped",
   delivered: "delivered",
 };
+
+export const socialType = { FB: "fb", GMAIL: "gmail" };

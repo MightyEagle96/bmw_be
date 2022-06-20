@@ -132,13 +132,13 @@ export const FacebookAccount = async (req, res) => {
     const user = await FacebookSchema.findOne({ email: req.body.email });
 
     if (!user) {
-      await FacebookSchema.create(req.body);
-      res.status(201).send("Facebook user stored");
+      const fbUser = await FacebookSchema.create(req.body);
+      res.status(201).json({ fbUser });
     } else {
-      await FacebookSchema.findByIdAndUpdate(user._id, {
+      const fbUser = await FacebookSchema.findByIdAndUpdate(user._id, {
         accessToken: req.body.accessToken,
       });
-      res.status(200).send("Facebook user updated");
+      res.status(200).json({ fbUser });
     }
     //if user email exists, just update the token
   } catch (error) {

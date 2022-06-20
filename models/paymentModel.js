@@ -20,6 +20,8 @@ const paymentSchema = new Schema({
   productStatus: { type: String, default: "pending" },
   dateShipped: { type: Date },
   dateDelivered: { type: Date },
+  fbCustomer: { type: Schema.Types.ObjectId, ref: "FacebookSchema" },
+  gmailCustomer: { type: Schema.Types.ObjectId, ref: "GoogleSchema" },
 });
 
 export default model("Payment", paymentSchema);
