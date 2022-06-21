@@ -8,6 +8,7 @@ import {
   VerifyAccount,
 } from "./authentication/authController.js";
 import {
+  MyOrders,
   PutInTransit,
   RecordPayment,
   ViewOrders,
@@ -40,6 +41,9 @@ router
   )
 
   .get("/viewOrders/:id", ViewOrders)
-  .patch("/putInTransit/:id", PutInTransit);
+  .patch("/putInTransit/:id", PutInTransit)
+
+  //view orders by authenticated users
+  .get("/getMyOrders", MyOrders);
 
 export default router;

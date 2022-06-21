@@ -20,22 +20,17 @@ export const RecordPayment = async (req, res) => {
       type: "success",
       status: true,
     });
-    //req.body.status === "successful"
+  } catch (error) {
+    ErrorHandler(error, res);
+  }
+};
 
-    // ? res.status(201).json({
-    //     title: "success",
-    //     quote: "Transaction approved. You will be contacted shortly",
-    //     type: "success",
-    //     status: true,
-    //   })
-    // : res.status(400).json({
-    //     title: "oops",
-    //     quote:
-    //       "Sorry we couldn't process your transaction at this time. Try again later",
-    //     type: "error",
-    //     status: true,
-    //   });
-    //notify the vendor
+export const MyOrders = async (req, res) => {
+  try {
+    const orders = await paymentModel
+      .find(req.query)
+      .populate(["product", "account"]);
+    res.json({ orders });
   } catch (error) {
     ErrorHandler(error, res);
   }

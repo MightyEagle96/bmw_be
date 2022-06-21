@@ -21,7 +21,7 @@ const paymentSchema = new Schema({
   dateShipped: { type: Date },
   dateDelivered: { type: Date },
   fbCustomer: { type: Schema.Types.ObjectId, ref: "FacebookSchema" },
-  gmailCustomer: { type: Schema.Types.ObjectId, ref: "GoogleSchema" },
+  googleCustomer: { type: Schema.Types.ObjectId, ref: "GoogleSchema" },
 });
 
 export default model("Payment", paymentSchema);
