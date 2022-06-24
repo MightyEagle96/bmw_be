@@ -8,10 +8,9 @@ export const RecordPayment = async (req, res) => {
 
     if (req.body.socialType === socialType.FB) {
       req.body.fbCustomer = req.body.user;
+    } else if (req.body.socialType === socialType.GOOGLE) {
+      req.body.googleCustomer = req.body.user;
     }
-
-    // if (req.body.social === socialType.GMAIL) {
-    // }
 
     await paymentModel.create(req.body);
     res.status(201).json({

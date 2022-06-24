@@ -126,7 +126,6 @@ export const GoogleAccount = async (req, res) => {
       res.status(200).json({ googleUser });
     }
   } catch (error) {
-    console.log(error);
     ErrorHandler(error, res);
   }
 };

@@ -4,4 +4,4 @@ export const productStatus = {
   delivered: "delivered",
 };
 
-export const socialType = { FB: "fb", GMAIL: "gmail" };
+export const socialType = { FB: "fb", GOOGLE: "google" };
