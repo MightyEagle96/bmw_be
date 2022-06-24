@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const productSchema = new Schema({
+  category: String,
+  subCategory: String,
   title: String,
   description: String,
   amount: Number,
