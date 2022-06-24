@@ -5,9 +5,9 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import { googleAuth, isAuth } from "./isAuth.js";
 import { ErrorHandler } from "../controllers/ErrorController.js";
-import request from "request";
+
 import otpGenerator from "otp-generator";
-import { FacebookSchema } from "../models/customer.js";
+import { FacebookSchema, GoogleSchema } from "../models/customer.js";
 
 export const CreateAccount = async (req, res) => {
   req.body.phoneNumber = `234${req.body.phoneNumber.slice(
@@ -97,34 +97,56 @@ export const Login = async (req, res) => {
 };
 
 export const GoogleAccount = async (req, res) => {
-  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-  const { tokenId } = req.body;
-  const ticket = await client.verifyIdToken({
-    idToken: tokenId,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
-  const accessToken = tokenId;
-  const { name, email, picture } = ticket.getPayload();
-
-  //store the user in the database
-  const account = await Account.findOne({ email });
-  const user = { name, email, picture };
-  if (!account) {
-    await Account.create({
-      name,
-      email,
-      picture,
-      isVerified: true,
-      authenticatedBy: "Google",
+  try {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const { credential } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
-  }
 
-  res.status(201).json({
-    message: "Welcome back to Sterling",
-    title: "Success",
-    user,
-    accessToken,
-  });
+    const accessToken = credential;
+    const { name, email, picture } = ticket.getPayload();
+
+    const user = await GoogleSchema.findOne({ email });
+    if (!user) {
+      const data = {
+        accessToken,
+        email,
+        name,
+        picture: { data: { url: picture } },
+      };
+
+      const googleUser = await GoogleSchema.create(data);
+      res.status(201).json({ googleUser });
+    } else {
+      const googleUser = await GoogleSchema.findByIdAndUpdate(user._id, {
+        accessToken,
+      });
+      res.status(200).json({ googleUser });
+    }
+  } catch (error) {
+    console.log(error);
+    ErrorHandler(error, res);
+  }
+};
+
+export const VerifyGoogleCredential = async (req, res) => {
+  try {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const { accessToken } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: accessToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { email } = ticket.getPayload();
+    const googleUser = await GoogleSchema.findOne({ email });
+
+    googleUser ? res.json({ googleUser }) : res.json(null);
+  } catch (error) {
+    ErrorHandler(error, res);
+  }
 };
 
 export const FacebookAccount = async (req, res) => {

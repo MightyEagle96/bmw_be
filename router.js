@@ -3,9 +3,11 @@ import multer from "multer";
 import {
   CreateAccount,
   FacebookAccount,
+  GoogleAccount,
   IsLoggedIn,
   Login,
   VerifyAccount,
+  VerifyGoogleCredential,
 } from "./authentication/authController.js";
 import {
   MyOrders,
@@ -26,6 +28,9 @@ const upload = multer({ dest: "public/images" });
 router
   .post("/createAccount", CreateAccount)
   .post("/facebookAccount", FacebookAccount)
+  .post("/googleAccount", GoogleAccount)
+  .post("/verifyGoogleCred", VerifyGoogleCredential)
+
   .post("/login", Login)
   .post("/verifyAccount", VerifyAccount)
   .post("/createProduct", IsLoggedIn, CreateProduct)

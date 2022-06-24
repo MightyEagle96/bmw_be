@@ -15,7 +15,19 @@ const facebookCustomers = new Schema({
   },
 });
 
-const googleCustomers = new Schema({});
+const googleCustomers = new Schema({
+  accessToken: String,
+  email: String,
+  name: String,
+  picture: {
+    data: {
+      height: Number,
+      is_silhouette: Boolean,
+      url: String,
+      width: Number,
+    },
+  },
+});
 
 const FacebookSchema = model("FacebookSchema", facebookCustomers);
 
